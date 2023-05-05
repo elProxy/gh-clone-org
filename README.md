@@ -26,6 +26,10 @@ gh clone-org [-t TOPIC] [-s QUERY] [-p PATH] [-y] ORG
     See: https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-for-repositories
   -n, --dry-run
     Do not actually clone, just show what would be cloned
+  -a, --archived
+    Also clone archived repositories
+  --stash
+    Stash any changes if needed to update existing repo in place
   -h, --help
     Display this message.
 ```
