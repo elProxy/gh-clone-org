@@ -106,7 +106,7 @@ elif [[ ${ARCHIVED} ]]; then
 fi
 
 echo "Retrieving the list of repositories: $QUERY"
-REPOS=$(gh api --paginate "$QUERY" -q "$JQ_QUERY")
+REPOS=$(gh api --paginate "$QUERY" -q "$JQ_QUERY" | sort)
 
 if [ -z "$REPOS" ]
 then
