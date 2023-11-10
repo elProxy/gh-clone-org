@@ -121,6 +121,11 @@ then
   CLONE_PATH="$(pwd)";
 fi
 
+foo="$(ls -l)"
+for f in $foo; do
+done
+
+
 if [ "$DRY_RUN" == "true" ]
 then
   echo "This would have cloned the following $COUNT repositories to $CLONE_PATH:"
