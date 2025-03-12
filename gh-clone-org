@@ -85,24 +85,27 @@ then
   exit 1
 fi
 
-JQ_QUERY='.items[].full_name'
-QUERY="search/repositories?q=org%3A$GITHUB_ORG+archived%3Afalse"
-if [ -n "$SEARCH" ]
-then
-  QUERY="$QUERY%20$(urlencode "$SEARCH")"
-elif [ -n "$CLONE_TOPIC" ]
-then
-  QUERY="$QUERY%20topic:$CLONE_TOPIC"
-elif [[ ${ARCHIVED} ]]; then
-  # The search api only returns up to 1000 items. If no additional search params are provided we should
-  # use the orgs or users apis so we can get everything.
+JQ_QUERY='.[]|select(.archived == false)|.full_name'
+if [[ "${ARCHIVED}" == "true" ]]; then
   JQ_QUERY='.[].full_name'
-  if [ "$(gh api "users/$GITHUB_ORG" -q '.type')" = "Organization" ]
-  then
+fi
+# The search api only returns up to 1000 items. If no additional search params are provided we should
+# use the orgs or users apis so we can get everything.
+if [[ "$(gh api "users/$GITHUB_ORG" -q '.type')" = "Organization" ]]; then
     QUERY="orgs/$GITHUB_ORG/repos"
-  else
+else
     QUERY="users/$GITHUB_ORG/repos"
-  fi
+fi
+
+SEARCH_QUERY="search/repositories?q=org%3A$GITHUB_ORG"
+if [[ -n "$SEARCH" ]]; then
+  QUERY="$SEARCH_QUERY%20$(urlencode "$SEARCH")"
+elif [[ -n "$CLONE_TOPIC" ]]; then
+  QUERY="$SEARCH_QUERY%20topic:$CLONE_TOPIC"
+fi
+
+if [[ -n "${SEARCH}" || -n "${CLONE_TOPIC}" ]] && [[ "${ARCHIVED}" == true ]]; then
+    QUERY+="+archived%3Afalse"
 fi
 
 echo "Retrieving the list of repositories: $QUERY"
